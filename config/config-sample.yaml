@@ -1,0 +1,42 @@
+env:
+  account:
+  region:
+
+githubRepoOwner:
+githubRepoName:
+
+dev:
+  stackName: project-dev-stack
+  environmentType: dev
+  branchName: dev
+  pipelineConfig:
+    name: project-dev
+  s3Config:
+    bucketName: project-dev-bucket
+    publicAccess: true
+    indexFile: index.html
+    errorFile: index.html
+
+qa:
+  stackName: project-qa-stack
+  environmentType: qa
+  branchName: master
+  pipelineConfig:
+    name: project-qa
+  s3Config:
+    bucketName: project-qa-bucket
+    publicAccess: true
+    indexFile: index.html
+    errorFile: index.html
+
+prod:
+  stackName: project-prod-stack
+  environmentType: prod
+  branchName: main
+  pipelineConfig:
+    name: project-prod
+  s3Config:
+    bucketName: project-prod-bucket
+    publicAccess: true
+    indexFile: index.html
+    errorFile: index.html
