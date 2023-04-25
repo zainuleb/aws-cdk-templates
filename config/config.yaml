@@ -2,7 +2,7 @@ env:
   account:
   region: eu-west-2
 
-githubRepoOwner:
+githubRepoOwner: theaimegroup
 githubRepoName: repoName
 
 dev:
