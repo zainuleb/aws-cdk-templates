@@ -13,6 +13,7 @@ export const devProps = {
   environmentType: config.dev.environmentType,
   branch: config.dev.branchName,
   pipelineName: config.dev.pipelineConfig.name,
+  pipelineBucket: config.dev.pipelineConfig.artifactsBucket,
   bucketName: config.dev.s3Config.bucketName,
   publicAccess: config.dev.s3Config.publicAccess,
   indexFile: config.dev.s3Config.indexFile,

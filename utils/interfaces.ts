@@ -4,6 +4,7 @@ export interface CustomStackProps extends StackProps {
   environmentType: string;
   branch: string;
   pipelineName: string;
+  pipelineBucket: string;
   bucketName: string;
   publicAccess: boolean;
   indexFile: string;

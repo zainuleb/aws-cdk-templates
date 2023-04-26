@@ -10,25 +10,33 @@ import {
 import { Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
 import { CustomStackProps } from "../utils/interfaces";
 
+import {
+  Distribution,
+  OriginAccessIdentity,
+  PriceClass,
+  ViewerProtocolPolicy,
+} from "aws-cdk-lib/aws-cloudfront";
+import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { PolicyStatement, CanonicalUserPrincipal } from "aws-cdk-lib/aws-iam";
+
 export class AwsCdkprojectnameStack extends Stack {
   constructor(scope: Construct, id: string, props: CustomStackProps) {
     super(scope, id, props);
-
-    const artifactsBucket = new Bucket(this, `${props.bucketName}-artifacts`, {
-      removalPolicy: RemovalPolicy.DESTROY,
-      encryption: BucketEncryption.S3_MANAGED,
-    });
-
     const websiteBucket = new Bucket(this, props.bucketName, {
       websiteIndexDocument: props.indexFile,
       publicReadAccess: props.publicAccess,
-      removalPolicy: RemovalPolicy.DESTROY,
       encryption: BucketEncryption.S3_MANAGED,
     });
 
+    const existingBucket = Bucket.fromBucketName(
+      this,
+      "ExistingBucket",
+      props.pipelineBucket
+    );
+
     const pipeline = new codepipeline.Pipeline(this, props.pipelineName, {
       pipelineName: props.pipelineName,
-      artifactBucket: artifactsBucket,
+      artifactBucket: existingBucket,
     });
 
     const sourceOutput = new codepipeline.Artifact();
@@ -48,7 +56,7 @@ export class AwsCdkprojectnameStack extends Stack {
         version: "0.2",
         phases: {
           install: {
-            commands: ['echo "Installing dependencies..."', "npm install"],
+            commands: ['echo "Installing dependencies..."', "npm ci"],
           },
           build: {
             commands: ['echo "Building the React app..."', "npm run build"],
@@ -82,6 +90,35 @@ export class AwsCdkprojectnameStack extends Stack {
       actions: [buildAction],
     });
 
+    const oai = new OriginAccessIdentity(this, "OAI");
+    // Add a policy statement to the bucket policy to allow CloudFront access
+    websiteBucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ["s3:GetObject"],
+        resources: [websiteBucket.arnForObjects("*")],
+        principals: [
+          new CanonicalUserPrincipal(
+            oai.cloudFrontOriginAccessIdentityS3CanonicalUserId
+          ),
+        ],
+      })
+    );
+    const s3Origin = new S3Origin(websiteBucket, {
+      originAccessIdentity: oai,
+    });
+    const distribution = new Distribution(
+      this,
+      `${props.stackName}-distribution`,
+      {
+        defaultBehavior: {
+          origin: s3Origin,
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+        defaultRootObject: "index.html",
+        priceClass: PriceClass.PRICE_CLASS_100,
+      }
+    );
+
     const deployAction = new codepipeline_actions.S3DeployAction({
       actionName: "Deploy_to_S3",
       input: buildOutput,
@@ -94,7 +131,7 @@ export class AwsCdkprojectnameStack extends Stack {
     });
 
     new CfnOutput(this, "WebsiteURL", {
-      value: websiteBucket.bucketWebsiteUrl,
+      value: distribution.distributionDomainName,
       description: "Website URL",
     });
   }

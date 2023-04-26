@@ -1,42 +1,19 @@
 env:
   account:
-  region:
+  region: eu-west-2
 
 githubRepoOwner:
 githubRepoName:
 
 dev:
-  stackName: project-dev-stack
+  stackName: projectname-dev-stack
   environmentType: dev
-  branchName: dev
-  pipelineConfig:
-    name: project-dev
-  s3Config:
-    bucketName: project-dev-bucket
-    publicAccess: true
-    indexFile: index.html
-    errorFile: index.html
-
-qa:
-  stackName: project-qa-stack
-  environmentType: qa
   branchName: master
   pipelineConfig:
-    name: project-qa
+    name: projectname-dev
+    artifactsBucket: codepipeline-eu-west-2-975428383503
   s3Config:
-    bucketName: project-qa-bucket
-    publicAccess: true
-    indexFile: index.html
-    errorFile: index.html
-
-prod:
-  stackName: project-prod-stack
-  environmentType: prod
-  branchName: main
-  pipelineConfig:
-    name: project-prod
-  s3Config:
-    bucketName: project-prod-bucket
-    publicAccess: true
+    bucketName: projectname-dev-bucket
+    publicAccess: false
     indexFile: index.html
     errorFile: index.html
