@@ -1,8 +1,8 @@
 {
-  "name": "aws-cdk-projectname",
+  "name": "aws-cdk-second-line-support",
   "version": "0.1.0",
   "bin": {
-    "aws-cdk-projectname": "bin/aws-cdk-projectname.js"
+    "aws-cdk-second-line-support": "bin/aws-cdk-second-line-support.js"
   },
   "scripts": {
     "build": "tsc",

@@ -1,6 +1,7 @@
 import { StackProps } from "aws-cdk-lib";
 
 export interface CustomStackProps extends StackProps {
+  accountId: string;
   environmentType: string;
   branch: string;
   pipelineName: string;

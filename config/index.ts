@@ -9,6 +9,7 @@ const config = parse(readConfigFile);
 export const stackName = config.stackName;
 
 export const devProps = {
+  accountId: config.env.account,
   stackName: config.dev.stackName,
   environmentType: config.dev.environmentType,
   branch: config.dev.branchName,

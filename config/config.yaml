@@ -1,19 +1,19 @@
 env:
-  account:
+  account: 026066253580
   region: eu-west-2
 
 githubRepoOwner: theaimegroup
-githubRepoName: repoName
+githubRepoName: second-line-support
 
 dev:
-  stackName: projectname-dev-stack
+  stackName: second-line-support-dev-stack
   environmentType: dev
-  branchName: main
+  branchName: master
   pipelineConfig:
-    name: projectname-dev
+    name: second-line-support-dev
     artifactsBucket: codepipeline-eu-west-2-975428383503
   s3Config:
-    bucketName: projectname-dev-bucket
+    bucketName: second-line-support-dev-bucket
     publicAccess: true
     indexFile: index.html
     errorFile: index.html

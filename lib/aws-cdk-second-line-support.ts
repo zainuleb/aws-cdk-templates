@@ -1,4 +1,4 @@
-import { Stack, RemovalPolicy, SecretValue, CfnOutput } from "aws-cdk-lib";
+import { Stack, SecretValue, CfnOutput, Duration } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as codepipeline from "aws-cdk-lib/aws-codepipeline";
 import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions";
@@ -7,7 +7,12 @@ import {
   LinuxBuildImage,
   PipelineProject,
 } from "aws-cdk-lib/aws-codebuild";
-import { Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
+import {
+  BlockPublicAccess,
+  Bucket,
+  BucketAccessControl,
+  BucketEncryption,
+} from "aws-cdk-lib/aws-s3";
 import { CustomStackProps } from "../utils/interfaces";
 
 import {
@@ -19,13 +24,14 @@ import {
 import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { PolicyStatement, CanonicalUserPrincipal } from "aws-cdk-lib/aws-iam";
 
-export class AwsCdkprojectnameStack extends Stack {
+export class AwsCdkSecondLineSupportStack extends Stack {
   constructor(scope: Construct, id: string, props: CustomStackProps) {
     super(scope, id, props);
     const websiteBucket = new Bucket(this, props.bucketName, {
       websiteIndexDocument: props.indexFile,
       publicReadAccess: props.publicAccess,
-      encryption: BucketEncryption.S3_MANAGED,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ACLS,
+      accessControl: BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
     });
 
     const existingBucket = Bucket.fromBucketName(
@@ -56,14 +62,21 @@ export class AwsCdkprojectnameStack extends Stack {
         version: "0.2",
         phases: {
           install: {
-            commands: ['echo "Installing dependencies..."', "npm ci"],
+            commands: [
+              'echo "Installing dependencies..."',
+              "npm install --force",
+            ],
           },
           build: {
-            commands: ['echo "Building the React app..."', "npm run build"],
+            commands: [
+              'echo "Building the React app..."',
+              "npm run build",
+              "ls",
+            ],
           },
         },
         artifacts: {
-          "base-directory": "build",
+          "base-directory": "dist",
           files: ["**/*"],
         },
       }),
@@ -115,6 +128,20 @@ export class AwsCdkprojectnameStack extends Stack {
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },
         defaultRootObject: "index.html",
+        errorResponses: [
+          {
+            httpStatus: 404,
+            responseHttpStatus: 404,
+            responsePagePath: "/index.html",
+            ttl: Duration.seconds(300),
+          },
+          {
+            httpStatus: 403,
+            responseHttpStatus: 500,
+            responsePagePath: "/index.html",
+            ttl: Duration.seconds(300),
+          },
+        ],
         priceClass: PriceClass.PRICE_CLASS_100,
       }
     );

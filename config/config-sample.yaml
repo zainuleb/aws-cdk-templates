@@ -6,14 +6,14 @@ githubRepoOwner:
 githubRepoName:
 
 dev:
-  stackName: projectname-dev-stack
+  stackName: second-line-support-dev-stack
   environmentType: dev
   branchName: master
   pipelineConfig:
-    name: projectname-dev
+    name: second-line-support-dev
     artifactsBucket: codepipeline-eu-west-2-975428383503
   s3Config:
-    bucketName: projectname-dev-bucket
+    bucketName: second-line-support-dev-bucket
     publicAccess: false
     indexFile: index.html
     errorFile: index.html
